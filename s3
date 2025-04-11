@@ -1,0 +1,28 @@
+import boto3
+from botocore.exceptions import NoCredentialsError
+
+s3 = boto3.client('s3')
+
+bucket_name = 'bucket7' 
+file_path = 'roto.txt'         
+s3_key = 'uploaded/roto.txt'   
+
+
+try:
+    s3.upload_file(file_path, bucket_name, s3_key)
+    print(f"Uploaded '{file_path}' to bucket '{bucket_name}' as '{s3_key}'")
+except FileNotFoundError:
+    print("The file was not found")
+except NoCredentialsError:
+    print("Credentials not available")
+
+print("\n Files in the S3 bucket:")
+try:
+    response = s3.list_objects_v2(Bucket=bucket_name)
+    if 'Contents' in response:
+        for obj in response['Contents']:
+            print(f" - {obj['Key']}")
+    else:
+        print("Bucket is empty or not accessible")
+except Exception as e:
+    print(" Error:", e)
